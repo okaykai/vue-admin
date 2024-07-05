@@ -26,7 +26,7 @@ export interface SkuData {
     skuDesc?: string //sku的描述
     skuAttrValueList?: Attr[]
     skuSaleAttrValueList?: saleAttr[]
-    thumb_img?: string //sku图片地址
+    thumbImg?: string //sku图片地址
     status?: number
     id?: number
 }

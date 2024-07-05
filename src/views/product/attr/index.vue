@@ -9,6 +9,7 @@ const specList = ref<Attrs[]>([])
 const attrParams = reactive<Attr>({
   id: undefined,
   specName: '',
+  specKey: '',
   specValue: '[]',
 })
 
@@ -62,7 +63,8 @@ const addAttrValue = () => {
   if (attrParams.specName) {
     attrValueList.push({key: attrParams.specName, valueList: []})
     attrParams.specValue = stringifySpecValue(attrValueList)
-    attrParams.specName = '' // 重置specName
+    attrParams.specKey = stringifySpecValue(attrValueList) // 设置 specKey
+    // attrParams.specName = '1' // 重置specName
   } else {
     ElMessage.error('请先填写属性名称')
   }
@@ -70,7 +72,17 @@ const addAttrValue = () => {
 
 const save = async () => {
   try {
-    const attrValueList = parseSpecValue(attrParams.specValue)
+    let attrValueList = parseSpecValue(attrParams.specValue)
+
+    // 确保 specValue 中没有重复的 key
+    attrValueList = attrValueList.filter((item, index, self) =>
+        index === self.findIndex((t) => t.key === item.key)
+    )
+
+    // const attrValueList = parseSpecValue(attrParams.specValue)
+
+    console.log("让我看看打印出来的是什么？,", attrParams)
+
     attrParams.specValue = stringifySpecValue(attrValueList)
 
     const res: any = await reqAddOrUpdateAttr(attrParams)
@@ -103,12 +115,22 @@ const deleteAttr = async (attrId: number) => {
 }
 
 const handleInputConfirm = (row: AttrValue, inputValue: string) => {
+
+  console.log("这个是啥子？,", inputValue);
+
   if (inputValue && !row.valueList.includes(inputValue)) {
     row.valueList.push(inputValue)
+
+    // 更新 attrParams.specValue
+    const currentSpecValue = parseSpecValue(attrParams.specValue)
+    const updatedSpecValue = currentSpecValue.map(item =>
+        item.key === row.key ? {...item, valueList: row.valueList} : item
+    )
+    attrParams.specValue = stringifySpecValue(updatedSpecValue)
   }
+
   row.inputVisible = false
   row.inputValue = ''
-  attrParams.specValue = stringifySpecValue(parseSpecValue(attrParams.specValue)) // 更新specValue
 }
 </script>
 

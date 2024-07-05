@@ -20,7 +20,7 @@ enum API {
     UPDATESPU_URL = '/admin/product/updateSpuInfo',
     ADDSKU_URL = '/admin/product/saveSkuInfo',
     SKUINFO_URL = '/admin/product/findBySpuId/',
-    REMOVESPU_URL = '/admin/product/deleteSpu/',
+    REMOVESPU_URL = '/admin/product/remove/',
 }
 
 export const reqHasSpu = (

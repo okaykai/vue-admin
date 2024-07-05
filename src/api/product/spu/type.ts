@@ -114,12 +114,12 @@ export interface SkuData {
     spuId: string | number //已有的SPU的ID
     tmId: string | number //SPU品牌的ID
     skuName: string //sku名字
-    price: string | number //sku价格
+    salePrice: string | number //sku价格
     weight: string | number //sku重量
     skuDesc: string //sku的描述
     skuAttrValueList?: Attr[]
     skuSaleAttrValueList?: saleAttr[]
-    skuDefaultImg: string //sku图片地址
+    thumbImg: string //sku图片地址
 }
 
 export interface SkuInfoData extends ResponseData {

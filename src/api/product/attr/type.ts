@@ -34,6 +34,7 @@ export type AttrValueList = AttrValue[]
 export interface Attr {
     id?: number;
     specName: string;
+    specKey: string;
     specValue: string;
 }
 
@@ -42,7 +43,9 @@ export type AttrList = Attr[]
 export interface AttrValue {
     key: string;
     valueList: string[];
-    editingValue?: { [key: string]: boolean };
+    editingValue?: {
+        [key: string]: boolean
+    };
 }
 
 export interface Attrs {

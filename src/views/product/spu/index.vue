@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {ref, watch, onBeforeUnmount, computed, watchEffect} from 'vue'
 import useCategoryStore from '@/store/modules/category'
-import {reqHasSpu, reqSkuList} from '@/api/product/spu'
+import {reqHasSpu, reqRemoveSpu, reqSkuList} from '@/api/product/spu'
 import type {
   HasSpuResponseData,
   Records,
@@ -113,7 +113,7 @@ const findSku = async (row: SpuData) => {
 }
 
 const deleteSpu = async (row: SpuData) => {
-  let res: any = await reqRemoveAttr(row.id as number)
+  let res: any = await reqRemoveSpu(row.id as number)
 
   if (res.code === 200) {
     ElMessage({
@@ -182,7 +182,7 @@ onBeforeUnmount(() => {
                 @click="findSku(row)"
             ></el-button>
             <el-popconfirm
-                :title="`你确定删除${row.spuName}?`"
+                :title="`你确定删除${row.name}?`"
                 width="200px"
                 @confirm="deleteSpu(row)"
             >
@@ -222,12 +222,12 @@ onBeforeUnmount(() => {
     <el-dialog v-model="show" title="SKU列表">
       <el-table :data="skuArr">
         <el-table-column label="SKU名字" prop="skuName"></el-table-column>
-        <el-table-column label="SKU价格" prop="price"></el-table-column>
+        <el-table-column label="SKU价格" prop="salePrice"></el-table-column>
         <el-table-column label="SKU重量" prop="weight"></el-table-column>
         <el-table-column label="SKU图片">
           <template #="{ row, $index }">
             <img
-                :src="row.skuDefaultImg"
+                :src="row.thumbImg"
                 alt=""
                 style="width: 100px; height: 100px"
             />

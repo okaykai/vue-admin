@@ -6,14 +6,15 @@
  * @LastEditTime: 2023-05-29 16:27:31
 -->
 <script setup lang="ts">
-import { reqAttr } from '@/api/product/attr'
+import {reqAttr} from '@/api/product/attr'
 import {
   reqSpuImageList,
   reqSpuHasSaleAttr,
   reqAddSku,
 } from '@/api/product/spu'
-import { ref, reactive } from 'vue'
-import type { SkuData } from '@/api/product/spu/type'
+import {ref, reactive} from 'vue'
+import type {SkuData} from '@/api/product/spu/type'
+
 let $emit = defineEmits(['changeScene'])
 let attrArr = ref<any>([])
 let saleArr = ref<any>([])
@@ -24,7 +25,7 @@ let skuParams = reactive<SkuData>({
   spuId: '',
   tmId: '',
   skuName: '',
-  price: '',
+  salePrice: '',
   weight: '',
   skuDesc: '',
   skuAttrValueList: [
@@ -39,16 +40,16 @@ let skuParams = reactive<SkuData>({
     //   saleAttrValueId: '',
     // },
   ],
-  skuDefaultImg: '',
+  thumbImg: '',
 })
 const cancel = () => {
-  $emit('changeScene', { flag: 0, params: '' })
+  $emit('changeScene', {flag: 0, params: ''})
 }
 
 const initSkuData = async (
-  c1Id: number | string,
-  c2Id: number | string,
-  spu: any,
+    c1Id: number | string,
+    c2Id: number | string,
+    spu: any,
 ) => {
   skuParams.category3Id = spu.category3Id
   skuParams.spuId = spu.id
@@ -66,7 +67,7 @@ const handler = (row: any) => {
     table.value.toggleRowSelection(item, false)
   })
   table.value.toggleRowSelection(row, true)
-  skuParams.skuDefaultImg = row.imgUrl
+  skuParams.thumbImg = row.imgUrl
 }
 
 const save = async () => {
@@ -82,17 +83,17 @@ const save = async () => {
   }, [])
 
   skuParams.skuSaleAttrValueList = saleArr.value.reduce(
-    (prev: any, next: any) => {
-      if (next.saleIdAndValueId) {
-        let [saleAttrId, saleAttrValueId] = next.saleIdAndValueId.split(':')
-        prev.push({
-          saleAttrId,
-          saleAttrValueId,
-        })
-      }
-      return prev
-    },
-    [],
+      (prev: any, next: any) => {
+        if (next.saleIdAndValueId) {
+          let [saleAttrId, saleAttrValueId] = next.saleIdAndValueId.split(':')
+          prev.push({
+            saleAttrId,
+            saleAttrValueId,
+          })
+        }
+        return prev
+      },
+      [],
   )
 
   let res = await reqAddSku(skuParams)
@@ -101,7 +102,7 @@ const save = async () => {
       type: 'success',
       message: '添加SKU成功',
     })
-    $emit('changeScene', { flag: 0, params: '' })
+    $emit('changeScene', {flag: 0, params: ''})
   } else {
     ElMessage({
       type: 'error',
@@ -120,38 +121,38 @@ defineExpose({
     </el-form-item>
     <el-form-item label="价格(元)">
       <el-input
-        placeholder="价格(元)"
-        type="number"
-        v-model="skuParams.price"
+          placeholder="价格(元)"
+          type="number"
+          v-model="skuParams.salePrice"
       ></el-input>
     </el-form-item>
     <el-form-item label="重量(g)">
       <el-input
-        placeholder="重量(g)"
-        type="number"
-        v-model="skuParams.weight"
+          placeholder="重量(g)"
+          type="number"
+          v-model="skuParams.weight"
       ></el-input>
     </el-form-item>
     <el-form-item label="SKU描述">
       <el-input
-        placeholder="SKU描述"
-        type="textarea"
-        v-model="skuParams.skuDesc"
+          placeholder="SKU描述"
+          type="textarea"
+          v-model="skuParams.skuDesc"
       ></el-input>
     </el-form-item>
     <el-form-item label="平台属性">
       <el-form :inline="true" label-width="100px">
         <el-form-item
-          :label="item.attrName"
-          v-for="(item, index) in attrArr"
-          :key="item.id"
+            :label="item.attrName"
+            v-for="(item, index) in attrArr"
+            :key="item.id"
         >
           <el-select v-model="item.attrIdAndValueId">
             <el-option
-              :value="`${item.id}:${attrValue.id}`"
-              :label="attrValue.valueName"
-              v-for="(attrValue, index) in item.attrValueList"
-              :key="attrValue.id"
+                :value="`${item.id}:${attrValue.id}`"
+                :label="attrValue.valueName"
+                v-for="(attrValue, index) in item.attrValueList"
+                :key="attrValue.id"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -160,16 +161,16 @@ defineExpose({
     <el-form-item label="销售属性">
       <el-form :inline="true">
         <el-form-item
-          :label="item.saleAttrName"
-          v-for="(item, index) in saleArr"
-          :key="item.id"
+            :label="item.saleAttrName"
+            v-for="(item, index) in saleArr"
+            :key="item.id"
         >
           <el-select v-model="item.saleIdAndValueId">
             <el-option
-              :value="`${item.id}:${saleAttrValue.id}`"
-              :label="saleAttrValue.saleAttrValueName"
-              v-for="(saleAttrValue, index) in item.spuSaleAttrValueList"
-              :key="saleAttrValue.id"
+                :value="`${item.id}:${saleAttrValue.id}`"
+                :label="saleAttrValue.saleAttrValueName"
+                v-for="(saleAttrValue, index) in item.spuSaleAttrValueList"
+                :key="saleAttrValue.id"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -178,13 +179,13 @@ defineExpose({
     <el-form-item label="图片名称">
       <el-table border :data="imgArr" ref="table">
         <el-table-column
-          type="selection"
-          width="80px"
-          align="center"
+            type="selection"
+            width="80px"
+            align="center"
         ></el-table-column>
         <el-table-column label="图片">
           <template #="{ row, $index }">
-            <img :src="row.imgUrl" alt="" style="width: 100px; height: 100px" />
+            <img :src="row.imgUrl" alt="" style="width: 100px; height: 100px"/>
           </template>
         </el-table-column>
         <el-table-column label="名称" prop="imgName"></el-table-column>

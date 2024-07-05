@@ -107,7 +107,7 @@ const removeSku = async (id: number) => {
       <el-table-column label="图片" width="250px">
         <template #="{ row, $index }">
           <img
-              :src="row.thumb_img"
+              :src="row.thumbImg"
               alt=""
               style="width: 100px; height: 100px"
           />

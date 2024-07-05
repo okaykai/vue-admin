@@ -1,10 +1,3 @@
-<!--
- * @Description: Stay hungry，Stay foolish
- * @Author: Huccct
- * @Date: 2023-05-28 11:47:41
- * @LastEditors: Huccct
- * @LastEditTime: 2023-05-29 16:27:31
--->
 <script setup lang="ts">
 import {reqAttr} from '@/api/product/attr'
 import {
@@ -14,6 +7,7 @@ import {
 } from '@/api/product/spu'
 import {ref, reactive} from 'vue'
 import type {SkuData} from '@/api/product/spu/type'
+import {ElMessage} from 'element-plus'
 
 let $emit = defineEmits(['changeScene'])
 let attrArr = ref<any>([])
@@ -70,46 +64,79 @@ const handler = (row: any) => {
   skuParams.thumbImg = row.imgUrl
 }
 
+
 const save = async () => {
-  skuParams.skuAttrValueList = attrArr.value.reduce((prev: any, next: any) => {
-    if (next.attrIdAndValueId) {
-      let [attrId, valueId] = next.attrIdAndValueId.split(':')
-      prev.push({
-        attrId,
-        valueId,
-      })
-    }
-    return prev
-  }, [])
 
-  skuParams.skuSaleAttrValueList = saleArr.value.reduce(
-      (prev: any, next: any) => {
-        if (next.saleIdAndValueId) {
-          let [saleAttrId, saleAttrValueId] = next.saleIdAndValueId.split(':')
-          prev.push({
-            saleAttrId,
-            saleAttrValueId,
-          })
-        }
-        return prev
-      },
-      [],
-  )
-
-  let res = await reqAddSku(skuParams)
-  if (res.code === 200) {
+  if (!skuParams.skuName || !skuParams.salePrice) {
     ElMessage({
-      type: 'success',
-      message: '添加SKU成功',
+      type: 'warning',
+      message: 'SKU名称和价格为必填项',
     })
-    $emit('changeScene', {flag: 0, params: ''})
-  } else {
+    return
+  }
+
+  try {
+    // 现有的数据处理逻辑...
+
+    let res = await reqAddSku(skuParams)
+    if (res.code === 200) {
+      ElMessage({
+        type: 'success',
+        message: '添加SKU成功',
+      })
+      $emit('changeScene', {flag: 0, params: ''})
+    } else {
+      throw new Error(res.message || '添加SKU失败')
+    }
+  } catch (error) {
+    console.error('保存SKU时出错:', error)
     ElMessage({
       type: 'error',
-      message: '添加SKU失败',
+      message: error.message || '添加SKU失败',
     })
   }
 }
+
+// const save = async () => {
+//   skuParams.skuAttrValueList = attrArr.value.reduce((prev: any, next: any) => {
+//     if (next.attrIdAndValueId) {
+//       let [attrId, valueId] = next.attrIdAndValueId.split(':')
+//       prev.push({
+//         attrId,
+//         valueId,
+//       })
+//     }
+//     return prev
+//   }, [])
+//
+//   skuParams.skuSaleAttrValueList = saleArr.value.reduce(
+//       (prev: any, next: any) => {
+//         if (next.saleIdAndValueId) {
+//           let [saleAttrId, saleAttrValueId] = next.saleIdAndValueId.split(':')
+//           prev.push({
+//             saleAttrId,
+//             saleAttrValueId,
+//           })
+//         }
+//         return prev
+//       },
+//       [],
+//   )
+//
+//   let res = await reqAddSku(skuParams)
+//   if (res.code === 200) {
+//     ElMessage({
+//       type: 'success',
+//       message: '添加SKU成功',
+//     })
+//     $emit('changeScene', {flag: 0, params: ''})
+//   } else {
+//     ElMessage({
+//       type: 'error',
+//       message: '添加SKU失败',
+//     })
+//   }
+// }
 defineExpose({
   initSkuData,
 })

@@ -1,10 +1,3 @@
-<!--
- * @Description: Stay hungry，Stay foolish
- * @Author: Huccct
- * @Date: 2023-05-28 11:47:08
- * @LastEditors: Huccct
- * @LastEditTime: 2023-05-28 22:46:31
--->
 <script setup lang="ts">
 import type {
   SpuData,

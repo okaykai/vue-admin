@@ -25,7 +25,7 @@ let menuData = reactive<MenuParams>({
   component: '',
   level: 0,
   title: '',
-  pid: 0,
+  parentId: 0,
 })
 
 onMounted(() => {
@@ -45,11 +45,11 @@ const addPermission = (row: Permission) => {
     component: '',
     level: 0,
     title: '',
-    pid: 0,
+    parentId: 0,
   })
   dialogVisible.value = true
   menuData.level = row.level + 1
-  menuData.pid = row.id as number
+  menuData.parentId = row.id as number
 }
 
 const updatePermission = (row: Permission) => {
@@ -74,6 +74,7 @@ const removeMenu = async (id: number) => {
   let res = await reqRemoveMenu(id)
   if (res.code === 200) {
     ElMessage({type: 'success', message: '删除成功'})
+    getHasPermission()
   }
 }
 </script>
@@ -105,7 +106,7 @@ const removeMenu = async (id: number) => {
           编辑
         </el-button>
         <el-popconfirm
-            :title="`你确定要删除${row.name}?`"
+            :title="`你确定要删除${row.title}?`"
             width="260px"
             @confirm="removeMenu(row.id)"
         >

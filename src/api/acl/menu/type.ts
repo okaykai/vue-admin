@@ -30,5 +30,5 @@ export interface MenuParams {
     component: string
     level: number
     title: string
-    pid: number
+    parentId: number
 }

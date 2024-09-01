@@ -157,24 +157,62 @@ const toLook = (row: SaleAttr) => {
   row.flag = false
 }
 
+// const save = async () => {
+//   SpuParams.value.spuImageList = imgList.value.map((item: any) => {
+//     return {
+//       imgName: item.name,
+//       imgUrl: (item.response && item.response.data) || item.url,
+//     }
+//   })
+//   SpuParams.value.spuSaleAttrList = saleAttr.value
+//   let res = await reqAddOrUpdateSpu(SpuParams.value)
+//   if (res.code === 200) {
+//     ElMessage({
+//       type: 'success',
+//       message: SpuParams.value.id ? '更新成功' : '添加成功',
+//     })
+//     $emit('changeScene', {
+//       flag: 0,
+//       params: SpuParams.value.id ? 'update' : 'add',
+//     })
+//   }
+// }
+
 const save = async () => {
-  SpuParams.value.spuImageList = imgList.value.map((item: any) => {
-    return {
-      imgName: item.name,
-      imgUrl: (item.response && item.response.data) || item.url,
+  // Create a copy of the original SpuParams
+  let updatedSpuParams = {...SpuParams.value};
+
+  // Only include fields that have been modified
+  if (imgList.value.length > 0) {
+    updatedSpuParams.spuImageList = imgList.value.map((item: any) => {
+      return {
+        imgName: item.name,
+        imgUrl: (item.response && item.response.data) || item.url,
+      }
+    });
+  }
+
+  if (saleAttr.value.length > 0) {
+    updatedSpuParams.spuSaleAttrList = saleAttr.value;
+  }
+
+  // Remove empty fields
+  Object.keys(updatedSpuParams).forEach(key => {
+    if (updatedSpuParams[key] === '' || updatedSpuParams[key] === undefined) {
+      delete updatedSpuParams[key];
     }
-  })
-  SpuParams.value.spuSaleAttrList = saleAttr.value
-  let res = await reqAddOrUpdateSpu(SpuParams.value)
+  });
+
+  let res = await reqAddOrUpdateSpu(updatedSpuParams);
   if (res.code === 200) {
     ElMessage({
       type: 'success',
       message: SpuParams.value.id ? '更新成功' : '添加成功',
-    })
+    });
     $emit('changeScene', {
       flag: 0,
       params: SpuParams.value.id ? 'update' : 'add',
-    })
+    });
   }
 }
 
@@ -335,7 +373,7 @@ defineExpose({initHasSpuData, initAddSpu})
           type="primary"
           size="default"
           @click="save"
-          :disabled="saleAttr.length > 0 ? false : true"
+          :disabled="Object.keys(SpuParams).every(key => !SpuParams[key])"
       >
         保存
       </el-button>

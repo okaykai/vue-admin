@@ -34,7 +34,7 @@ let useCategoryStore = defineStore('Category', {
         setBrandIdChange(brandId: string | number) {
             this.brandId = brandId
         },
-        setSearchCategoryIdList(list: any[]) {
+        setSearchCategoryIdList(list: []) {
             this.searchCategoryIdList = list
         },
         async getC1() {

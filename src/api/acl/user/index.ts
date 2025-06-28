@@ -7,20 +7,20 @@
  */
 import request from '@/utils/request'
 import type {
-    UserResponseData,
-    User,
-    AllRoleResponseData,
-    SetRoleData,
+  UserResponseData,
+  User,
+  AllRoleResponseData,
+  SetRoleData,
 } from './type'
 
 enum API {
-    ALLUSER_URL = '/admin/acl/user',
-    ADDUSER_URL = '/admin/acl/user/save',
-    UPDATEUSER_URL = '/admin/acl/user/update',
-    ALLROLEURL = '/admin/acl/role/toAssign',
-    SETROLE_url = '/admin/acl/role/doAssign',
-    DELETEUSER_URL = '/admin/acl/user/remove/',
-    DELETEALLUSER_URL = '/admin/acl/user/batchRemove',
+  ALLUSER_URL = '/admin/acl/user',
+  ADDUSER_URL = '/admin/acl/user/save',
+  UPDATEUSER_URL = '/admin/acl/user/update',
+  ALLROLEURL = '/admin/acl/role/toAssign',
+  SETROLE_url = '/admin/acl/role/doAssign',
+  DELETEUSER_URL = '/admin/acl/user/remove/',
+  DELETEALLUSER_URL = '/admin/acl/user/batchRemove',
 }
 
 // export const reqUserInfo = (page: number, limit: number, username: string) =>
@@ -28,32 +28,30 @@ enum API {
 //     API.ALLUSER_URL + `/${page}/${limit}/?username=${username}`,
 //   )
 export const reqUserInfo = (page: number, limit: number, username: string) => {
-    const url = `${API.ALLUSER_URL}/${page}/${limit}?keyword=${username}`;
-    return request.get<any, UserResponseData>(url);
-};
+  const url = `${API.ALLUSER_URL}/${page}/${limit}?keyword=${username}`
+  return request.get<any, UserResponseData>(url)
+}
 
 // 修改用户
 export const reqAddOrUpdateUser = (data: User) => {
-    if (data.id) {
-        return request.put<any, any>(API.UPDATEUSER_URL, data)
-    } else {
-        return request.post<any, any>(API.ADDUSER_URL, data)
-    }
+  if (data.id) {
+    return request.put<any, any>(API.UPDATEUSER_URL, data)
+  } else {
+    return request.post<any, any>(API.ADDUSER_URL, data)
+  }
 }
 
 export const reqAllRole = (userId: number) => {
-    const url = `${API.ALLROLEURL}/${userId}`;
-    return request.get<any, AllRoleResponseData>(url);
+  const url = `${API.ALLROLEURL}/${userId}`
+  return request.get<any, AllRoleResponseData>(url)
 }
 
-
 export const reqSetUserRole = (data: SetRoleData) =>
-    request.post<any, any>(API.SETROLE_url, data)
-
+  request.post<any, any>(API.SETROLE_url, data)
 
 // 删除用户
 export const reqRemoveUser = (userId: number) =>
-    request.delete<any, any>(API.DELETEUSER_URL + userId)
+  request.delete<any, any>(API.DELETEUSER_URL + userId)
 
 export const reqSelectUser = (idList: number[]) =>
-    request.delete(API.DELETEALLUSER_URL, {data: idList})
+  request.delete(API.DELETEALLUSER_URL, { data: idList })

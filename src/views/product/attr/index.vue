@@ -1,8 +1,17 @@
 <script setup lang="ts">
-import {ref, reactive, onMounted} from 'vue'
-import {reqAddOrUpdateAttr, reqRemoveAttr, getSpecList} from '@/api/product/attr'
-import type {Attr, AttrValue, Attrs, AttrResponse} from '@/api/product/attr/type'
-import {ElMessage} from 'element-plus'
+import { ref, reactive, onMounted } from 'vue'
+import {
+  reqAddOrUpdateAttr,
+  reqRemoveAttr,
+  getSpecList,
+} from '@/api/product/attr'
+import type {
+  Attr,
+  AttrValue,
+  Attrs,
+  AttrResponse,
+} from '@/api/product/attr/type'
+import { ElMessage } from 'element-plus'
 
 const scene = ref<number>(0)
 const specList = ref<Attrs[]>([])
@@ -24,7 +33,7 @@ const parseSpecValue = (specValueString: string): AttrValue[] => {
 
 const stringifySpecValue = (specValueList: AttrValue[]): string => {
   return JSON.stringify(
-      specValueList.map(({key, valueList}) => ({key, valueList}))
+    specValueList.map(({ key, valueList }) => ({ key, valueList })),
   )
 }
 
@@ -45,7 +54,7 @@ const getAttr = async (page = 1, limit = 10) => {
 }
 
 const addAttr = () => {
-  Object.assign(attrParams, {id: undefined, specName: '', specValue: '[]'})
+  Object.assign(attrParams, { id: undefined, specName: '', specValue: '[]' })
   scene.value = 1
 }
 
@@ -61,7 +70,7 @@ const cancel = () => {
 const addAttrValue = () => {
   const attrValueList = parseSpecValue(attrParams.specValue)
   if (attrParams.specName) {
-    attrValueList.push({key: attrParams.specName, valueList: []})
+    attrValueList.push({ key: attrParams.specName, valueList: [] })
     attrParams.specValue = stringifySpecValue(attrValueList)
     attrParams.specKey = stringifySpecValue(attrValueList) // 设置 specKey
     // attrParams.specName = '1' // 重置specName
@@ -75,13 +84,14 @@ const save = async () => {
     let attrValueList = parseSpecValue(attrParams.specValue)
 
     // 确保 specValue 中没有重复的 key
-    attrValueList = attrValueList.filter((item, index, self) =>
-        index === self.findIndex((t) => t.key === item.key)
+    attrValueList = attrValueList.filter(
+      (item, index, self) =>
+        index === self.findIndex((t) => t.key === item.key),
     )
 
     // const attrValueList = parseSpecValue(attrParams.specValue)
 
-    console.log("让我看看打印出来的是什么？,", attrParams)
+    console.log('让我看看打印出来的是什么？,', attrParams)
 
     attrParams.specValue = stringifySpecValue(attrValueList)
 
@@ -115,16 +125,15 @@ const deleteAttr = async (attrId: number) => {
 }
 
 const handleInputConfirm = (row: AttrValue, inputValue: string) => {
-
-  console.log("这个是啥子？,", inputValue);
+  console.log('这个是啥子？,', inputValue)
 
   if (inputValue && !row.valueList.includes(inputValue)) {
     row.valueList.push(inputValue)
 
     // 更新 attrParams.specValue
     const currentSpecValue = parseSpecValue(attrParams.specValue)
-    const updatedSpecValue = currentSpecValue.map(item =>
-        item.key === row.key ? {...item, valueList: row.valueList} : item
+    const updatedSpecValue = currentSpecValue.map((item) =>
+      item.key === row.key ? { ...item, valueList: row.valueList } : item,
     )
     attrParams.specValue = stringifySpecValue(updatedSpecValue)
   }
@@ -141,12 +150,22 @@ const handleInputConfirm = (row: AttrValue, inputValue: string) => {
         添加平台属性
       </el-button>
       <el-table border style="margin: 10px 0" :data="specList">
-        <el-table-column label="序号" type="index" align="center" width="80px"></el-table-column>
+        <el-table-column
+          label="序号"
+          type="index"
+          align="center"
+          width="80px"
+        ></el-table-column>
         <el-table-column label="属性名称" prop="specName"></el-table-column>
         <el-table-column label="属性值列表">
           <template #default="{ row }">
-            <el-tag style="margin-left: 5px" v-for="(value, index) in parseSpecValue(row.specValue)[0]?.valueList || []"
-                    :key="index" closable>
+            <el-tag
+              style="margin-left: 5px"
+              v-for="(value, index) in parseSpecValue(row.specValue)[0]
+                ?.valueList || []"
+              :key="index"
+              closable
+            >
               {{ value }}
             </el-tag>
           </template>
@@ -154,7 +173,9 @@ const handleInputConfirm = (row: AttrValue, inputValue: string) => {
         <el-table-column label="操作">
           <template #default="{ row }">
             <el-button type="primary" @click="updateAttr(row)">编辑</el-button>
-            <el-button type="danger" @click="deleteAttr(row.id)">删除</el-button>
+            <el-button type="danger" @click="deleteAttr(row.id)">
+              删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -165,31 +186,51 @@ const handleInputConfirm = (row: AttrValue, inputValue: string) => {
           <el-input v-model="attrParams.specName"></el-input>
         </el-form-item>
       </el-form>
-      <el-button style="margin: 10px 0" type="primary" @click="addAttrValue" :disabled="!attrParams.specName">
+      <el-button
+        style="margin: 10px 0"
+        type="primary"
+        @click="addAttrValue"
+        :disabled="!attrParams.specName"
+      >
         添加属性值
       </el-button>
-      <el-button style="margin: 10px 0;margin-left: 5px" @click="cancel">取消</el-button>
+      <el-button style="margin: 10px 0; margin-left: 5px" @click="cancel">
+        取消
+      </el-button>
       <el-table border :data="parseSpecValue(attrParams.specValue)">
         <el-table-column label="属性值名称">
           <template #default="{ row }">
-            <el-tag style="margin-left: 5px" v-for="(value, index) in row.valueList" :key="index" closable>
+            <el-tag
+              style="margin-left: 5px"
+              v-for="(value, index) in row.valueList"
+              :key="index"
+              closable
+            >
               {{ value }}
             </el-tag>
             <el-input
-                v-if="row.inputVisible"
-                v-model="row.inputValue"
-                @keyup.enter="handleInputConfirm(row, row.inputValue)"
-                @blur="handleInputConfirm(row, row.inputValue)"
+              v-if="row.inputVisible"
+              v-model="row.inputValue"
+              @keyup.enter="handleInputConfirm(row, row.inputValue)"
+              @blur="handleInputConfirm(row, row.inputValue)"
             ></el-input>
-            <el-button v-else @click="row.inputVisible = true">+ 新属性值</el-button>
+            <el-button v-else @click="row.inputVisible = true">
+              + 新属性值
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
-      <el-button style="margin: 10px 0" type="primary" @click="save"
-                 :disabled="!parseSpecValue(attrParams.specValue).length">
+      <el-button
+        style="margin: 10px 0"
+        type="primary"
+        @click="save"
+        :disabled="!parseSpecValue(attrParams.specValue).length"
+      >
         保存
       </el-button>
-      <el-button style="margin: 10px 0;margin-left: 5px" @click="cancel">取消</el-button>
+      <el-button style="margin: 10px 0; margin-left: 5px" @click="cancel">
+        取消
+      </el-button>
     </div>
   </el-card>
 </template>

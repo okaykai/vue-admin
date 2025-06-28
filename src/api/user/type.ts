@@ -2,8 +2,8 @@
 export interface LoginFormData {
   username?: string
   password?: string
-  captcha?: string;
-  codeKey?: string;
+  captcha?: string
+  codeKey?: string
 }
 
 export interface ResponseData {
@@ -18,8 +18,8 @@ export interface ResponseData {
 
 export interface LoginResponseData extends ResponseData {
   data?: {
-    token?: string;
-    refresh_token?: string;
+    token?: string
+    refresh_token?: string
   }
 }
 
@@ -35,7 +35,7 @@ export interface userInfoResponseData extends ResponseData {
 
 export interface CaptchaResponseData extends ResponseData {
   data: {
-    codeKey: string,
-    codeValue: string,
+    codeKey: string
+    codeValue: string
   }
 }

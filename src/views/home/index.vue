@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {getTime} from '@/utils/time'
+import { getTime } from '@/utils/time'
 import useUserStore from '@/store/modules/user'
 
 let userStore = useUserStore()
@@ -7,7 +7,7 @@ let userStore = useUserStore()
 <template>
   <el-card>
     <div class="box">
-      <img :src="userStore.avatar" alt="" class="avatar"/>
+      <img :src="userStore.avatar" alt="" class="avatar" />
       <div class="footer">
         <h3 class="title">
           {{ getTime() }}好~

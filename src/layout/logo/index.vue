@@ -10,7 +10,7 @@ import setting from '@/setting'
 </script>
 <template>
   <div class="logo" v-if="setting.logoHidden">
-    <img :src="setting.logo" alt=""/>
+    <img :src="setting.logo" alt="" />
     <span class="title">{{ setting.title }}</span>
   </div>
 </template>

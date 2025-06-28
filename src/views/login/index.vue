@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { User, Lock, Warning } from '@element-plus/icons-vue'
-import { Ref, computed, reactive, ref,onMounted, } from 'vue'
+import { Ref, computed, reactive, ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElNotification } from 'element-plus'
 import { getTime } from '@/utils/time'
@@ -17,7 +17,6 @@ let loading = ref(false)
 // const identifyCodes = ref('1234567890abcdefjhijklinopqrsduvwxyz')
 const identifyImage = ref('')
 const identifyKey = ref('')
-
 
 // 重置验证码 1
 // const refreshCode = () => {
@@ -36,8 +35,8 @@ const fetchCaptcha = async () => {
   try {
     const response = await reqCaptcha()
     if (response.code === 200 && response.data) {
-      identifyImage.value = response.data.codeValue  // 设置显示的验证码图片
-      identifyKey.value = response.data.codeKey  // 设置验证码的key，用于验证
+      identifyImage.value = response.data.codeValue // 设置显示的验证码图片
+      identifyKey.value = response.data.codeKey // 设置验证码的key，用于验证
       loginForm.codeKey = response.data.codeKey
     } else {
       ElNotification({
@@ -67,7 +66,7 @@ const loginForm = reactive({
   userName: 'keith',
   password: '111111',
   captcha: '',
-  codeKey: ''  // 新增字段，用于传递验证码的key
+  codeKey: '', // 新增字段，用于传递验证码的key
   // verifyCode: '1234',
 })
 
@@ -198,14 +197,17 @@ const rules = {
                 size="large"
                 maxlength="4"
               >
-<!--                <template #append>-->
-<!--                  <Identify :identifyCode="identifyCode" @click="fetchCaptcha" />-->
-<!--                </template>-->
+                <!--                <template #append>-->
+                <!--                  <Identify :identifyCode="identifyCode" @click="fetchCaptcha" />-->
+                <!--                </template>-->
 
                 <template #append>
-                  <img :src="identifyImage" @click="fetchCaptcha" alt="Captcha" />
+                  <img
+                    :src="identifyImage"
+                    @click="fetchCaptcha"
+                    alt="Captcha"
+                  />
                 </template>
-
               </el-input>
             </el-form-item>
           </el-form>

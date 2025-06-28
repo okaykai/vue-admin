@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, onMounted, reactive, nextTick} from 'vue'
+import { ref, onMounted, reactive, nextTick } from 'vue'
 import {
   reqUserInfo,
   reqAddOrUpdateUser,
@@ -14,7 +14,8 @@ import type {
   User,
   AllRoleResponseData,
   AllRole,
-  SetRoleData, RoleData,
+  SetRoleData,
+  RoleData,
 } from '@/api/acl/user/type'
 import useLayOutSettingStore from '@/store/modules/setting'
 
@@ -50,9 +51,9 @@ let settingStore = useLayOutSettingStore()
 const getHasUser = async (pager = 1) => {
   pageNo.value = pager
   let res: UserResponseData = await reqUserInfo(
-      pageNo.value,
-      pageSize.value,
-      keyword.value,
+    pageNo.value,
+    pageSize.value,
+    keyword.value,
   )
   if (res.code === 200) {
     total.value = res.data.total
@@ -136,9 +137,9 @@ const validatorPassword = (rule: any, value: any, callBack: any) => {
 }
 
 const rules = {
-  userName: [{required: true, trigger: 'blur', validator: validatorUserName}],
-  name: [{required: true, trigger: 'blur', validator: validatorName}],
-  password: [{required: true, trigger: 'blur', validator: validatorPassword}],
+  userName: [{ required: true, trigger: 'blur', validator: validatorUserName }],
+  name: [{ required: true, trigger: 'blur', validator: validatorName }],
+  password: [{ required: true, trigger: 'blur', validator: validatorPassword }],
 }
 
 // const setRole = async (row: User) => {
@@ -153,17 +154,17 @@ const rules = {
 // }
 
 const setRole = async (row: User) => {
-  drawer1.value = true;
-  Object.assign(userParams, row);
-  let res: AllRoleResponseData = await reqAllRole(userParams.id as number);
+  drawer1.value = true
+  Object.assign(userParams, row)
+  let res: AllRoleResponseData = await reqAllRole(userParams.id as number)
   if (res.code === 200) {
-    allRole.value = res.data.aliRolesList;
-    userRole.value = res.data.sysUserRole.map(roleId => {
-      return allRole.value.find(role => role.id === roleId) as RoleData;
-    });
-    drawer1.value = true;
+    allRole.value = res.data.aliRolesList
+    userRole.value = res.data.sysUserRole.map((roleId) => {
+      return allRole.value.find((role) => role.id === roleId) as RoleData
+    })
+    drawer1.value = true
   }
-};
+}
 
 const checkAll = ref<boolean>(false)
 const isIndeterminate = ref<boolean>(true)
@@ -181,17 +182,16 @@ const isIndeterminate = ref<boolean>(true)
 // }
 
 const handleCheckAllChange = (val: boolean) => {
-  userRole.value = val ? [...allRole.value] : [];
-  isIndeterminate.value = false;
-};
+  userRole.value = val ? [...allRole.value] : []
+  isIndeterminate.value = false
+}
 
 const handleCheckedUsersChange = (value: RoleData[]) => {
-  const checkedCount = value.length;
-  checkAll.value = checkedCount === allRole.value.length;
+  const checkedCount = value.length
+  checkAll.value = checkedCount === allRole.value.length
   isIndeterminate.value =
-      checkedCount > 0 && checkedCount < allRole.value.length;
-};
-
+    checkedCount > 0 && checkedCount < allRole.value.length
+}
 
 // const confirmClick = async () => {
 //   let data: SetRoleData = {
@@ -215,24 +215,24 @@ const confirmClick = async () => {
   let data: SetRoleData = {
     userId: userParams.id as number,
     roleIdList: userRole.value.map((item) => {
-      return item.id as number;
+      return item.id as number
     }),
-  };
-  let res: any = await reqSetUserRole(data);
+  }
+  let res: any = await reqSetUserRole(data)
   if (res.code === 200) {
     ElMessage({
       type: 'success',
       message: '分配职务成功',
-    });
-    drawer1.value = false;
-    getHasUser(pageNo.value);
+    })
+    drawer1.value = false
+    getHasUser(pageNo.value)
   }
-};
+}
 
 const deleteUser = async (userId: number) => {
   let res: any = await reqRemoveUser(userId)
   if (res.code === 200) {
-    ElMessage({type: 'success', message: '删除成功'})
+    ElMessage({ type: 'success', message: '删除成功' })
     getHasUser(userArr.value.length > 1 ? pageNo.value : pageNo.value - 1)
   }
 }
@@ -247,7 +247,7 @@ const deleteSelectUser = async () => {
   })
   let res: any = await reqSelectUser(idList)
   if (res.code === 200) {
-    ElMessage({type: 'success', message: '删除成功'})
+    ElMessage({ type: 'success', message: '删除成功' })
     getHasUser(userArr.value.length > 1 ? pageNo.value : pageNo.value - 1)
   }
 }
@@ -269,10 +269,10 @@ const reset = () => {
       </el-form-item>
       <el-form-item>
         <el-button
-            type="primary"
-            size="default"
-            :disabled="keyword.length ? false : true"
-            @click="search"
+          type="primary"
+          size="default"
+          :disabled="keyword.length ? false : true"
+          @click="search"
         >
           搜索
         </el-button>
@@ -285,33 +285,33 @@ const reset = () => {
       添加用户
     </el-button>
     <el-button
-        type="danger"
-        size="default"
-        :disabled="selectIdArr.length ? false : true"
-        @click="deleteSelectUser"
+      type="danger"
+      size="default"
+      :disabled="selectIdArr.length ? false : true"
+      @click="deleteSelectUser"
     >
       批量删除
     </el-button>
     <el-table
-        style="margin: 10px 0"
-        border
-        :data="userArr"
-        @selection-change="selectChange"
+      style="margin: 10px 0"
+      border
+      :data="userArr"
+      @selection-change="selectChange"
     >
       <el-table-column type="selection" align="center"></el-table-column>
       <el-table-column label="#" align="center" type="index"></el-table-column>
       <el-table-column label="id" align="center" prop="id"></el-table-column>
       <el-table-column
-          label="用户名字"
-          align="center"
-          prop="userName"
-          show-overflow-tooltip
+        label="用户名字"
+        align="center"
+        prop="userName"
+        show-overflow-tooltip
       ></el-table-column>
       <el-table-column
-          label="用户名称"
-          align="center"
-          prop="name"
-          show-overflow-tooltip
+        label="用户名称"
+        align="center"
+        prop="name"
+        show-overflow-tooltip
       ></el-table-column>
       <!--      <el-table-column-->
       <!--        label="用户角色"-->
@@ -320,22 +320,22 @@ const reset = () => {
       <!--        show-overflow-tooltip-->
       <!--      ></el-table-column>-->
       <el-table-column
-          label="手机号"
-          align="center"
-          prop="phone"
-          show-overflow-tooltip
+        label="手机号"
+        align="center"
+        prop="phone"
+        show-overflow-tooltip
       ></el-table-column>
       <el-table-column
-          label="创建时间"
-          align="center"
-          prop="createTime"
-          show-overflow-tooltip
+        label="创建时间"
+        align="center"
+        prop="createTime"
+        show-overflow-tooltip
       ></el-table-column>
       <el-table-column
-          label="更新时间"
-          align="center"
-          prop="updateTime"
-          show-overflow-tooltip
+        label="更新时间"
+        align="center"
+        prop="updateTime"
+        show-overflow-tooltip
       ></el-table-column>
       <el-table-column label="操作" width="300px" align="center">
         <template #="{ row, $index }">
@@ -343,17 +343,17 @@ const reset = () => {
             分配角色
           </el-button>
           <el-button
-              type="primary"
-              size="small"
-              icon="Edit"
-              @click="updateUser(row)"
+            type="primary"
+            size="small"
+            icon="Edit"
+            @click="updateUser(row)"
           >
             编辑
           </el-button>
           <el-popconfirm
-              :title="`你确定删除${row.userName}`"
-              width="260px"
-              @confirm="deleteUser(row.id)"
+            :title="`你确定删除${row.userName}`"
+            width="260px"
+            @confirm="deleteUser(row.id)"
           >
             <template #reference>
               <el-button type="danger" size="small" icon="Delete">
@@ -365,14 +365,14 @@ const reset = () => {
       </el-table-column>
     </el-table>
     <el-pagination
-        v-model:current-page="pageNo"
-        v-model:page-size="pageSize"
-        :page-sizes="[5, 7, 9, 11]"
-        :background="true"
-        layout="prev, pager, next, jumper, -> , sizes, total"
-        :total="total"
-        @current-change="getHasUser"
-        @size-change="handler"
+      v-model:current-page="pageNo"
+      v-model:page-size="pageSize"
+      :page-sizes="[5, 7, 9, 11]"
+      :background="true"
+      layout="prev, pager, next, jumper, -> , sizes, total"
+      :total="total"
+      @current-change="getHasUser"
+      @size-change="handler"
     />
   </el-card>
   <el-drawer v-model="drawer">
@@ -383,20 +383,20 @@ const reset = () => {
       <el-form :model="userParams" :rules="rules" ref="formRef">
         <el-form-item label="用户姓名" prop="userName">
           <el-input
-              placeholder="请您输入用户姓名"
-              v-model="userParams.userName"
+            placeholder="请您输入用户姓名"
+            v-model="userParams.userName"
           ></el-input>
         </el-form-item>
         <el-form-item label="用户昵称" prop="name">
           <el-input
-              placeholder="请您输入用户昵称"
-              v-model="userParams.name"
+            placeholder="请您输入用户昵称"
+            v-model="userParams.name"
           ></el-input>
         </el-form-item>
         <el-form-item label="用户密码" prop="password" v-if="!userParams.id">
           <el-input
-              placeholder="请您输入用户密码"
-              v-model="userParams.password"
+            placeholder="请您输入用户密码"
+            v-model="userParams.password"
           ></el-input>
         </el-form-item>
       </el-form>
@@ -419,20 +419,20 @@ const reset = () => {
         </el-form-item>
         <el-form-item label="职位列表">
           <el-checkbox
-              v-model="checkAll"
-              :indeterminate="isIndeterminate"
-              @change="handleCheckAllChange"
+            v-model="checkAll"
+            :indeterminate="isIndeterminate"
+            @change="handleCheckAllChange"
           >
             全选
           </el-checkbox>
           <el-checkbox-group
-              v-model="userRole"
-              @change="handleCheckedUsersChange"
+            v-model="userRole"
+            @change="handleCheckedUsersChange"
           >
             <el-checkbox
-                v-for="(role, index) in allRole"
-                :key="index"
-                :label="role"
+              v-for="(role, index) in allRole"
+              :key="index"
+              :label="role"
             >
               {{ role.roleName }}
             </el-checkbox>

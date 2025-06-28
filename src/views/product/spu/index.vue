@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {ref, watch, onBeforeUnmount, computed, watchEffect} from 'vue'
+import { ref, watch, onBeforeUnmount, computed, watchEffect } from 'vue'
 import useCategoryStore from '@/store/modules/category'
-import {reqHasSpu, reqRemoveSpu, reqSkuList} from '@/api/product/spu'
+import { reqHasSpu, reqRemoveSpu, reqSkuList } from '@/api/product/spu'
 import type {
   HasSpuResponseData,
   Records,
@@ -10,8 +10,8 @@ import type {
 } from '@/api/product/spu/type'
 import SpuForm from './components/spuForm.vue'
 import SkuForm from './components/skuForm.vue'
-import {SkuData} from '@/api/product/spu/type'
-import {reqRemoveAttr} from '@/api/product/attr'
+import { SkuData } from '@/api/product/spu/type'
+import { reqRemoveAttr } from '@/api/product/attr'
 
 let categoryStore = useCategoryStore()
 let scene = ref<number>(0)
@@ -26,10 +26,10 @@ let sku = ref<any>()
 let skuArr = ref<SkuData[]>([])
 let show = ref<boolean>(false)
 
-
 // 使用 computed 来获取最新的 searchCategoryIdList
-const currentSearchCategoryIdList = computed(() => [...categoryStore.searchCategoryIdList])
-
+const currentSearchCategoryIdList = computed(() => [
+  ...categoryStore.searchCategoryIdList,
+])
 
 watchEffect(() => {
   const newValue = currentSearchCategoryIdList.value
@@ -40,7 +40,7 @@ watchEffect(() => {
     categoryStore.c1Id = newValue[0]
     categoryStore.c2Id = newValue[1]
     categoryStore.c3Id = newValue[2]
-    console.log("此时的C3ID是：", categoryStore.c3Id)
+    console.log('此时的C3ID是：', categoryStore.c3Id)
   } else {
     // 如果没有第三个 ID，可以将 c3Id 设置为 null 或者其他默认值
     categoryStore.c3Id = null
@@ -48,25 +48,25 @@ watchEffect(() => {
 
   // 处理 brandId，非空判断
   if (brandId) {
-    console.log("此时的Brand ID是：", brandId)
+    console.log('此时的Brand ID是：', brandId)
   }
 })
 
 watch(
-    () => categoryStore.c3Id,
-    () => {
-      if (!categoryStore.c3Id) return
-      getHasSpu()
-    },
+  () => categoryStore.c3Id,
+  () => {
+    if (!categoryStore.c3Id) return
+    getHasSpu()
+  },
 )
 
 const getHasSpu = async (pager = 1) => {
   pageNo.value = pager
   let res: HasSpuResponseData = await reqHasSpu(
-      pageNo.value,
-      pageSize.value,
-      categoryStore.c3Id,
-      categoryStore.brandId,
+    pageNo.value,
+    pageSize.value,
+    categoryStore.c3Id,
+    categoryStore.brandId,
   )
   if (res.code === 200) {
     records.value = res.data.records
@@ -80,7 +80,11 @@ const changeSize = () => {
 
 const addSpu = () => {
   scene.value = 1
-  spu.value.initAddSpu(categoryStore.c1Id, categoryStore.c2Id, categoryStore.c3Id)
+  spu.value.initAddSpu(
+    categoryStore.c1Id,
+    categoryStore.c2Id,
+    categoryStore.c3Id,
+  )
 }
 
 const changeScene = (obj: any) => {
@@ -138,60 +142,60 @@ onBeforeUnmount(() => {
   <el-card style="margin: 10px 0">
     <div v-show="scene === 0">
       <el-button
-          type="primary"
-          size="default"
-          icon="Plus"
-          :disabled="categoryStore.c3Id ? false : true"
-          @click="addSpu"
+        type="primary"
+        size="default"
+        icon="Plus"
+        :disabled="categoryStore.c3Id ? false : true"
+        @click="addSpu"
       >
         添加SPU
       </el-button>
       <el-table style="margin: 10px 0" border :data="records">
         <el-table-column
-            label="序号"
-            align="center"
-            width="80px"
-            type="index"
+          label="序号"
+          align="center"
+          width="80px"
+          type="index"
         ></el-table-column>
         <el-table-column label="SPU名称" prop="name"></el-table-column>
         <el-table-column
-            label="SPU描述"
-            prop="proDesc"
-            show-overflow-tooltip
+          label="SPU描述"
+          prop="proDesc"
+          show-overflow-tooltip
         ></el-table-column>
         <el-table-column label="SPU操作">
           <template #="{ row, $index }">
             <el-button
-                icon="Plus"
-                title="添加SKU"
-                size="small"
-                @click="addSku(row)"
+              icon="Plus"
+              title="添加SKU"
+              size="small"
+              @click="addSku(row)"
             ></el-button>
             <el-button
-                type="primary"
-                icon="Edit"
-                title="修改SPU"
-                size="small"
-                @click="updateSpu(row)"
+              type="primary"
+              icon="Edit"
+              title="修改SPU"
+              size="small"
+              @click="updateSpu(row)"
             ></el-button>
             <el-button
-                type="info"
-                icon="View"
-                title="查看SKU列表"
-                size="small"
-                @click="findSku(row)"
+              type="info"
+              icon="View"
+              title="查看SKU列表"
+              size="small"
+              @click="findSku(row)"
             ></el-button>
             <el-popconfirm
-                :title="`你确定删除${row.name}?`"
-                width="200px"
-                @confirm="deleteSpu(row)"
+              :title="`你确定删除${row.name}?`"
+              width="200px"
+              @confirm="deleteSpu(row)"
             >
               <template #reference>
                 <el-button
-                    type="danger"
-                    icon="Delete"
-                    title="删除SPU"
-                    size="small"
+                  type="danger"
+                  icon="Delete"
+                  title="删除SPU"
+                  size="small"
                 ></el-button>
               </template>
             </el-popconfirm>
@@ -199,25 +203,25 @@ onBeforeUnmount(() => {
         </el-table-column>
       </el-table>
       <el-pagination
-          v-model:current-page="pageNo"
-          v-model:page-size="pageSize"
-          :page-sizes="[3, 5, 7, 9]"
-          :background="true"
-          layout="prev, pager, next, jumper, ->, sizes, total"
-          :total="total"
-          @current-change="getHasSpu"
-          @size-change="changeSize"
+        v-model:current-page="pageNo"
+        v-model:page-size="pageSize"
+        :page-sizes="[3, 5, 7, 9]"
+        :background="true"
+        layout="prev, pager, next, jumper, ->, sizes, total"
+        :total="total"
+        @current-change="getHasSpu"
+        @size-change="changeSize"
       />
     </div>
     <SpuForm
-        ref="spu"
-        v-show="scene === 1"
-        @changeScene="changeScene"
+      ref="spu"
+      v-show="scene === 1"
+      @changeScene="changeScene"
     ></SpuForm>
     <SkuForm
-        ref="sku"
-        v-show="scene === 2"
-        @changeScene="changeScene"
+      ref="sku"
+      v-show="scene === 2"
+      @changeScene="changeScene"
     ></SkuForm>
     <el-dialog v-model="show" title="SKU列表">
       <el-table :data="skuArr">
@@ -227,9 +231,9 @@ onBeforeUnmount(() => {
         <el-table-column label="SKU图片">
           <template #="{ row, $index }">
             <img
-                :src="row.thumbImg"
-                alt=""
-                style="width: 100px; height: 100px"
+              :src="row.thumbImg"
+              alt=""
+              style="width: 100px; height: 100px"
             />
           </template>
         </el-table-column>

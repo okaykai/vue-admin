@@ -6,7 +6,7 @@
  * @LastEditTime: 2023-06-01 14:59:11
 -->
 <script setup lang="ts">
-import {ref, onMounted, reactive, nextTick} from 'vue'
+import { ref, onMounted, reactive, nextTick } from 'vue'
 import {
   reqRemoveRole,
   reqAllRoleList,
@@ -56,9 +56,9 @@ let tree = ref<any>()
 const getHasRole = async (pager = 1) => {
   pageNo.value = pager
   let res: RoleResponseData = await reqAllRoleList(
-      pageNo.value,
-      pageSize.value,
-      keyword.value,
+    pageNo.value,
+    pageSize.value,
+    keyword.value,
   )
   if (res.code === 200) {
     total.value = res.data.total
@@ -107,7 +107,7 @@ const validateRoleName = (rule: any, value: any, callBack: any) => {
 }
 
 const rules = {
-  roleName: [{required: true, trigger: 'blur', validator: validateRoleName}],
+  roleName: [{ required: true, trigger: 'blur', validator: validateRoleName }],
 }
 
 const save = async () => {
@@ -124,25 +124,25 @@ const save = async () => {
 }
 
 const setPermission = async (row: RoleData) => {
-  console.log('Opening drawer for role: ', row);
-  drawer.value = true; // 确保在请求前就设置为true
-  Object.assign(RoleParams, row);
+  console.log('Opening drawer for role: ', row)
+  drawer.value = true // 确保在请求前就设置为true
+  Object.assign(RoleParams, row)
   try {
-    let res: MenuResponseData = await reqAllMenuList(RoleParams.id as number);
-    console.log('MenuResponseData: ', res);
+    let res: MenuResponseData = await reqAllMenuList(RoleParams.id as number)
+    console.log('MenuResponseData: ', res)
     if (res.code === 200) {
-      menuArr.value = res.data.sysMenuList;
-      selectArr.value = res.data.roleMenuIds;
-      filterSelectArr(menuArr.value, selectArr.value);
+      menuArr.value = res.data.sysMenuList
+      selectArr.value = res.data.roleMenuIds
+      filterSelectArr(menuArr.value, selectArr.value)
     } else {
-      console.error('Error: ', res.message);
-      drawer.value = false; // 如果请求失败，关闭弹窗
+      console.error('Error: ', res.message)
+      drawer.value = false // 如果请求失败，关闭弹窗
     }
   } catch (error) {
-    console.error('Request failed: ', error);
-    drawer.value = false; // 如果请求失败，关闭弹窗
+    console.error('Request failed: ', error)
+    drawer.value = false // 如果请求失败，关闭弹窗
   }
-};
+}
 
 const defaultProps = {
   children: 'children',
@@ -152,35 +152,34 @@ const defaultProps = {
 const filterSelectArr = (allData: MenuList, roleMenuIds: number[]) => {
   allData.forEach((item) => {
     if (roleMenuIds.includes(item.id)) {
-      item.select = true;
+      item.select = true
     }
     if (item.children && item.children.length > 0) {
-      filterSelectArr(item.children, roleMenuIds);
+      filterSelectArr(item.children, roleMenuIds)
     }
-  });
-};
+  })
+}
 
 const handler = async () => {
-  const roleId = RoleParams.id as number;
-  const fullCheckedKeys = tree.value.getCheckedKeys();
-  const halfCheckedKeys = tree.value.getHalfCheckedKeys();
+  const roleId = RoleParams.id as number
+  const fullCheckedKeys = tree.value.getCheckedKeys()
+  const halfCheckedKeys = tree.value.getHalfCheckedKeys()
 
   const permissionIdList = [
-    ...fullCheckedKeys.map(id => ({id, isHalf: 0})),
-    ...halfCheckedKeys.map(id => ({id, isHalf: 1})),
-  ];
+    ...fullCheckedKeys.map((id) => ({ id, isHalf: 0 })),
+    ...halfCheckedKeys.map((id) => ({ id, isHalf: 1 })),
+  ]
 
-  let res: any = await reqSetPermission(roleId, permissionIdList);
+  let res: any = await reqSetPermission(roleId, permissionIdList)
   if (res.code === 200) {
-    drawer.value = false;
+    drawer.value = false
     ElMessage({
       type: 'success',
       message: '分配权限成功',
-    });
-    window.location.reload();
+    })
+    window.location.reload()
   }
-};
-
+}
 
 const removeRole = async (id: number) => {
   let res: any = await reqRemoveRole(id)
@@ -198,16 +197,16 @@ const removeRole = async (id: number) => {
     <el-form :inline="true" class="form">
       <el-form-item label="职位搜索">
         <el-input
-            placeholder="请你输入搜索职位的关键字"
-            v-model="keyword"
+          placeholder="请你输入搜索职位的关键字"
+          v-model="keyword"
         ></el-input>
       </el-form-item>
       <el-form-item>
         <el-button
-            type="primary"
-            size="default"
-            :disabled="keyword ? false : true"
-            @click="search"
+          type="primary"
+          size="default"
+          :disabled="keyword ? false : true"
+          @click="search"
         >
           搜索
         </el-button>
@@ -223,22 +222,22 @@ const removeRole = async (id: number) => {
       <el-table-column type="index" align="center" label="#"></el-table-column>
       <el-table-column label="ID" align="center" prop="id"></el-table-column>
       <el-table-column
-          label="职位名称"
-          align="center"
-          show-overflow-tooltip
-          prop="roleName"
+        label="职位名称"
+        align="center"
+        show-overflow-tooltip
+        prop="roleName"
       ></el-table-column>
       <el-table-column
-          label="创建时间"
-          align="center"
-          show-overflow-tooltip
-          prop="createTime"
+        label="创建时间"
+        align="center"
+        show-overflow-tooltip
+        prop="createTime"
       ></el-table-column>
       <el-table-column
-          label="更新时间"
-          align="center"
-          show-overflow-tooltip
-          prop="updateTime"
+        label="更新时间"
+        align="center"
+        show-overflow-tooltip
+        prop="updateTime"
       ></el-table-column>
       <el-table-column label="操作" width="280px" align="center">
         <template #="{ row, $index }">
@@ -246,17 +245,17 @@ const removeRole = async (id: number) => {
             分配权限
           </el-button>
           <el-button
-              type="primary"
-              size="small"
-              icon="Edit"
-              @click="updateRole(row)"
+            type="primary"
+            size="small"
+            icon="Edit"
+            @click="updateRole(row)"
           >
             编辑
           </el-button>
           <el-popconfirm
-              :title="`你确定要删除${row.roleName}?`"
-              width="260px"
-              @confirm="removeRole(row.id)"
+            :title="`你确定要删除${row.roleName}?`"
+            width="260px"
+            @confirm="removeRole(row.id)"
           >
             <template #reference>
               <el-button type="danger" size="small" icon="Delete">
@@ -268,25 +267,25 @@ const removeRole = async (id: number) => {
       </el-table-column>
     </el-table>
     <el-pagination
-        v-model:current-page="pageNo"
-        v-model:page-size="pageSize"
-        :page-sizes="[10, 20, 30, 40]"
-        :background="true"
-        layout="prev, pager, next, jumper , ->, sizes, total, "
-        :total="total"
-        @current-change="getHasRole"
-        @size-change="sizeHandler"
+      v-model:current-page="pageNo"
+      v-model:page-size="pageSize"
+      :page-sizes="[10, 20, 30, 40]"
+      :background="true"
+      layout="prev, pager, next, jumper , ->, sizes, total, "
+      :total="total"
+      @current-change="getHasRole"
+      @size-change="sizeHandler"
     />
   </el-card>
   <el-dialog
-      v-model="dialogVisible"
-      :title="RoleParams.id ? '更新职位' : '添加职位'"
+    v-model="dialogVisible"
+    :title="RoleParams.id ? '更新职位' : '添加职位'"
   >
     <el-form :model="RoleParams" :rules="rules" ref="form">
       <el-form-item label="职位名称" prop="roleName">
         <el-input
-            placeholder="请你输入职位名称"
-            v-model="RoleParams.roleName"
+          placeholder="请你输入职位名称"
+          v-model="RoleParams.roleName"
         ></el-input>
       </el-form-item>
     </el-form>
@@ -301,13 +300,13 @@ const removeRole = async (id: number) => {
     </template>
     <template #default>
       <el-tree
-          ref="tree"
-          :data="menuArr"
-          show-checkbox
-          node-key="id"
-          default-expand-all
-          :default-checked-keys="selectArr"
-          :props="defaultProps"
+        ref="tree"
+        :data="menuArr"
+        show-checkbox
+        node-key="id"
+        default-expand-all
+        :default-checked-keys="selectArr"
+        :props="defaultProps"
       />
     </template>
     <template #footer>

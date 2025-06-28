@@ -12,7 +12,7 @@ export interface User {
   password?: string
   name?: string
   phone?: null
-  description:string
+  description: string
   roleName?: string
 }
 
@@ -41,8 +41,8 @@ export interface RoleData {
 export type AllRole = RoleData[]
 export interface AllRoleResponseData extends ResponseData {
   data: {
-    sysUserRole: number[];
-    aliRolesList: AllRole;
+    sysUserRole: number[]
+    aliRolesList: AllRole
   }
 }
 

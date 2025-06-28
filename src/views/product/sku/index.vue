@@ -6,7 +6,7 @@
  * @LastEditTime: 2023-05-31 19:59:01
 -->
 <script setup lang="ts">
-import {ref, onMounted} from 'vue'
+import { ref, onMounted } from 'vue'
 import {
   reqSkuList,
   reqSaleSku,
@@ -63,7 +63,7 @@ const updateSale = async (row: SkuData) => {
 }
 
 const updateSku = () => {
-  ElMessage({type: 'info', message: '程序员在努力的更新中...'})
+  ElMessage({ type: 'info', message: '程序员在努力的更新中...' })
 }
 
 const findSku = async (row: SkuData) => {
@@ -75,10 +75,10 @@ const findSku = async (row: SkuData) => {
 const removeSku = async (id: number) => {
   let res = await reqRemoveSku(id)
   if (res.code === 200) {
-    ElMessage({type: 'success', message: '删除成功'})
+    ElMessage({ type: 'success', message: '删除成功' })
     getHasSku(skuArr.value.length > 1 ? pageNo.value : pageNo.value - 1)
   } else {
-    ElMessage({type: 'error', message: '系统数据不能删除'})
+    ElMessage({ type: 'error', message: '系统数据不能删除' })
   }
 }
 </script>
@@ -86,66 +86,62 @@ const removeSku = async (id: number) => {
   <el-card>
     <el-table border style="margin: 10px 0; width: 100%" :data="skuArr">
       <el-table-column
-          label="序号"
-          type="index"
-          align="center"
-          width="80px"
-          fixed
+        label="序号"
+        type="index"
+        align="center"
+        width="80px"
+        fixed
       ></el-table-column>
       <el-table-column
-          label="名称"
-          show-overflow-tooltip
-          width="150px"
-          prop="skuName"
+        label="名称"
+        show-overflow-tooltip
+        width="150px"
+        prop="skuName"
       ></el-table-column>
       <el-table-column
-          label="描述"
-          show-overflow-tooltip
-          width="350px"
-          prop="skuDesc"
+        label="描述"
+        show-overflow-tooltip
+        width="350px"
+        prop="skuDesc"
       ></el-table-column>
       <el-table-column label="图片" width="250px">
         <template #="{ row, $index }">
-          <img
-              :src="row.thumbImg"
-              alt=""
-              style="width: 100px; height: 100px"
-          />
+          <img :src="row.thumbImg" alt="" style="width: 100px; height: 100px" />
         </template>
       </el-table-column>
       <el-table-column
-          label="重量(g)"
-          width="150px"
-          prop="weight"
+        label="重量(g)"
+        width="150px"
+        prop="weight"
       ></el-table-column>
       <el-table-column
-          label="价格(元)"
-          width="150px"
-          prop="salePrice"
+        label="价格(元)"
+        width="150px"
+        prop="salePrice"
       ></el-table-column>
       <el-table-column label="操作" fixed="right" width="450px">
         <template #="{ row, $index }">
           <el-button
-              size="small"
-              :icon="row.status === 1 ? 'Bottom' : 'Top'"
-              @click="updateSale(row)"
+            size="small"
+            :icon="row.status === 1 ? 'Bottom' : 'Top'"
+            @click="updateSale(row)"
           ></el-button>
           <el-button
-              type="primary"
-              size="small"
-              icon="Edit"
-              @click="updateSku"
+            type="primary"
+            size="small"
+            icon="Edit"
+            @click="updateSku"
           ></el-button>
           <el-button
-              type="info"
-              size="small"
-              icon="InfoFilled"
-              @click="findSku(row)"
+            type="info"
+            size="small"
+            icon="InfoFilled"
+            @click="findSku(row)"
           ></el-button>
           <el-popconfirm
-              :title="`你确定要删除${row.skuName}`"
-              width="200px"
-              @confirm="removeSku(row.id)"
+            :title="`你确定要删除${row.skuName}`"
+            width="200px"
+            @confirm="removeSku(row.id)"
           >
             <template #reference>
               <el-button type="danger" size="small" icon="Delete"></el-button>
@@ -155,14 +151,14 @@ const removeSku = async (id: number) => {
       </el-table-column>
     </el-table>
     <el-pagination
-        v-model:current-page="pageNo"
-        v-model:page-size="pageSize"
-        :page-sizes="[10, 20, 30, 40]"
-        :background="true"
-        layout="prev, pager, next, jumper,->,sizes, total,"
-        :total="total"
-        @current-change="getHasSku"
-        @size-change="handler"
+      v-model:current-page="pageNo"
+      v-model:page-size="pageSize"
+      :page-sizes="[10, 20, 30, 40]"
+      :background="true"
+      layout="prev, pager, next, jumper,->,sizes, total,"
+      :total="total"
+      @current-change="getHasSku"
+      @size-change="handler"
     />
     <el-drawer v-model="drawer">
       <template #header>
@@ -185,9 +181,9 @@ const removeSku = async (id: number) => {
           <el-col :span="6">平台属性</el-col>
           <el-col :span="18">
             <el-tag
-                style="margin: 5px"
-                v-for="item in skuInfo.skuAttrValueList"
-                :key="item.id"
+              style="margin: 5px"
+              v-for="item in skuInfo.skuAttrValueList"
+              :key="item.id"
             >
               {{ item.valueName }}
             </el-tag>
@@ -197,9 +193,9 @@ const removeSku = async (id: number) => {
           <el-col :span="6">销售属性</el-col>
           <el-col :span="18">
             <el-tag
-                style="margin: 5px"
-                v-for="item in skuInfo.skuSaleAttrValueList"
-                :key="item.id"
+              style="margin: 5px"
+              v-for="item in skuInfo.skuSaleAttrValueList"
+              :key="item.id"
             >
               {{ item.saleAttrValueName }}
             </el-tag>
@@ -210,13 +206,13 @@ const removeSku = async (id: number) => {
           <el-col :span="18">
             <el-carousel :interval="4000" type="card" height="200px">
               <el-carousel-item
-                  v-for="item in skuInfo.skuImageList"
-                  :key="item.id"
+                v-for="item in skuInfo.skuImageList"
+                :key="item.id"
               >
                 <img
-                    :src="item.imgUrl"
-                    alt=""
-                    style="width: 100%; height: 100%"
+                  :src="item.imgUrl"
+                  alt=""
+                  style="width: 100%; height: 100%"
                 />
               </el-carousel-item>
             </el-carousel>

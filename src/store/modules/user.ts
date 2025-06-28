@@ -22,7 +22,6 @@ import cloneDeep from 'lodash/cloneDeep'
 
 let dynamicRoutes = []
 
-
 // 屏蔽过滤筛选路由方法
 function filterAsyncRoute(asyncRoute: any, routes: any) {
   return asyncRoute.filter((item: any) => {
@@ -69,26 +68,24 @@ let useUserStore = defineStore('User', {
         this.username = res.data.name as string
         this.avatar = res.data.avatar as string
 
-        // 屏蔽动态路由 不进行过滤
-        // let userAsyncRoute = filterAsyncRoute(
-        //   cloneDeep(asyncRoute),
-        //   res.data.routes,
-        // )
-        // this.menuRoutes = [...constantRoute, ...userAsyncRoute, anyRoute]
-        // dynamicRoutes = [...userAsyncRoute, anyRoute] // 记录动态添加的路由
-        // dynamicRoutes.forEach((route) => {
-        //   router.addRoute(route) // 动态添加路由
-        // })
-
-        // 获取全部路由
-        let userAsyncRoute = cloneDeep(asyncRoute)
+        let userAsyncRoute = filterAsyncRoute(
+          cloneDeep(asyncRoute),
+          res.data.routes,
+        )
         this.menuRoutes = [...constantRoute, ...userAsyncRoute, anyRoute]
         dynamicRoutes = [...userAsyncRoute, anyRoute] // 记录动态添加的路由
         dynamicRoutes.forEach((route) => {
           router.addRoute(route) // 动态添加路由
         })
-        return 'ok'
 
+        // 获取全部路由
+        // let userAsyncRoute = cloneDeep(asyncRoute)
+        // this.menuRoutes = [...constantRoute, ...userAsyncRoute, anyRoute]
+        // dynamicRoutes = [...userAsyncRoute, anyRoute] // 记录动态添加的路由
+        // dynamicRoutes.forEach((route) => {
+        //   router.addRoute(route) // 动态添加路由
+        // })
+        return 'ok'
       } else {
         return Promise.reject(new Error(res.message))
       }

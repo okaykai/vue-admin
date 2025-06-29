@@ -11,7 +11,7 @@ import type {
   Attrs,
   AttrResponse,
 } from '@/api/product/attr/type'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 const scene = ref<number>(0)
 const specList = ref<Attrs[]>([])
@@ -24,7 +24,12 @@ const attrParams = reactive<Attr>({
 
 const parseSpecValue = (specValueString: string): AttrValue[] => {
   try {
-    return JSON.parse(specValueString)
+    const parsed = JSON.parse(specValueString)
+    return parsed.map((item: any) => ({
+      ...item,
+      inputVisible: false,
+      inputValue: '',
+    }))
   } catch (error) {
     console.error('Error parsing specValue:', error)
     return []
@@ -70,10 +75,23 @@ const cancel = () => {
 const addAttrValue = () => {
   const attrValueList = parseSpecValue(attrParams.specValue)
   if (attrParams.specName) {
-    attrValueList.push({ key: attrParams.specName, valueList: [] })
-    attrParams.specValue = stringifySpecValue(attrValueList)
-    attrParams.specKey = stringifySpecValue(attrValueList) // 设置 specKey
-    // attrParams.specName = '1' // 重置specName
+    // 检查是否已存在相同的key
+    const existingIndex = attrValueList.findIndex(
+      (item) => item.key === attrParams.specName,
+    )
+    if (existingIndex === -1) {
+      attrValueList.push({
+        key: attrParams.specName,
+        valueList: [],
+        inputVisible: false,
+        inputValue: '',
+      })
+      attrParams.specValue = stringifySpecValue(attrValueList)
+      attrParams.specKey = stringifySpecValue(attrValueList) // 设置 specKey
+      attrParams.specName = '' // 重置specName
+    } else {
+      ElMessage.error('该属性键已存在')
+    }
   } else {
     ElMessage.error('请先填写属性名称')
   }
@@ -141,6 +159,43 @@ const handleInputConfirm = (row: AttrValue, inputValue: string) => {
   row.inputVisible = false
   row.inputValue = ''
 }
+
+// 删除属性值
+const removeAttrValue = (row: AttrValue, valueIndex: number) => {
+  row.valueList.splice(valueIndex, 1)
+
+  // 更新 attrParams.specValue
+  const currentSpecValue = parseSpecValue(attrParams.specValue)
+  const updatedSpecValue = currentSpecValue.map((item) =>
+    item.key === row.key ? { ...item, valueList: row.valueList } : item,
+  )
+  attrParams.specValue = stringifySpecValue(updatedSpecValue)
+}
+
+// 删除属性键
+const removeAttrKey = (keyIndex: number) => {
+  const currentSpecValue = parseSpecValue(attrParams.specValue)
+  currentSpecValue.splice(keyIndex, 1)
+  attrParams.specValue = stringifySpecValue(currentSpecValue)
+}
+
+// 确认删除属性
+const confirmDeleteAttr = async (row: Attrs) => {
+  try {
+    await ElMessageBox.confirm(
+      `确定要删除属性"${row.specName}"吗？`,
+      '删除提示',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      },
+    )
+    await deleteAttr(row.id)
+  } catch (error) {
+    ElMessage.info('已取消删除')
+  }
+}
 </script>
 
 <template>
@@ -173,7 +228,7 @@ const handleInputConfirm = (row: AttrValue, inputValue: string) => {
         <el-table-column label="操作">
           <template #default="{ row }">
             <el-button type="primary" @click="updateAttr(row)">编辑</el-button>
-            <el-button type="danger" @click="deleteAttr(row.id)">
+            <el-button type="danger" @click="confirmDeleteAttr(row)">
               删除
             </el-button>
           </template>
@@ -198,13 +253,15 @@ const handleInputConfirm = (row: AttrValue, inputValue: string) => {
         取消
       </el-button>
       <el-table border :data="parseSpecValue(attrParams.specValue)">
-        <el-table-column label="属性值名称">
-          <template #default="{ row }">
+        <el-table-column label="属性键" prop="key"></el-table-column>
+        <el-table-column label="属性值列表">
+          <template #default="{ row, $index }">
             <el-tag
               style="margin-left: 5px"
               v-for="(value, index) in row.valueList"
               :key="index"
               closable
+              @close="removeAttrValue(row, index)"
             >
               {{ value }}
             </el-tag>
@@ -213,9 +270,27 @@ const handleInputConfirm = (row: AttrValue, inputValue: string) => {
               v-model="row.inputValue"
               @keyup.enter="handleInputConfirm(row, row.inputValue)"
               @blur="handleInputConfirm(row, row.inputValue)"
+              style="width: 100px; margin-left: 5px"
+              size="small"
             ></el-input>
-            <el-button v-else @click="row.inputVisible = true">
+            <el-button
+              v-else
+              @click="row.inputVisible = true"
+              size="small"
+              type="primary"
+            >
               + 新属性值
+            </el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="120">
+          <template #default="{ row, $index }">
+            <el-button
+              type="danger"
+              size="small"
+              @click="removeAttrKey($index)"
+            >
+              删除属性
             </el-button>
           </template>
         </el-table-column>

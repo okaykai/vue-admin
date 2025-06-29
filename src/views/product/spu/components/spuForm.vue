@@ -23,6 +23,8 @@ import useUserStore from '@/store/modules/user.ts'
 
 let $emit = defineEmits(['changeScene'])
 let saleAttrIdAndValueName = ref<string>('')
+let showManualInput = ref<boolean>(false)
+let manualSaleAttrName = ref<string>('')
 const cancel = () => {
   $emit('changeScene', { flag: 0, params: 'update' })
 }
@@ -100,16 +102,39 @@ const uploadHeaders = computed(() => ({
 }))
 
 let unSelectSaleAttr = computed(() => {
+  if (!allSaleAttr.value || !Array.isArray(allSaleAttr.value)) {
+    return []
+  }
   let unSelectArr = allSaleAttr.value.filter((item) => {
     return saleAttr.value.every((item1) => {
-      return item.name !== item1.saleAttrName
+      return item.attrKey !== item1.saleAttrName
     })
   })
   return unSelectArr
 })
 
 const addSaleAttr = () => {
+  if (
+    !saleAttrIdAndValueName.value ||
+    !saleAttrIdAndValueName.value.includes(':')
+  ) {
+    ElMessage({
+      type: 'warning',
+      message: '请选择销售属性',
+    })
+    return
+  }
+
   const [baseSaleAttrId, saleAttrName] = saleAttrIdAndValueName.value.split(':')
+
+  if (!baseSaleAttrId || !saleAttrName) {
+    ElMessage({
+      type: 'error',
+      message: '销售属性数据格式错误',
+    })
+    return
+  }
+
   let newSaleAttr: SaleAttr = {
     baseSaleAttrId,
     saleAttrName,
@@ -117,6 +142,45 @@ const addSaleAttr = () => {
   }
   saleAttr.value.push(newSaleAttr)
   saleAttrIdAndValueName.value = ''
+}
+
+const addManualSaleAttr = () => {
+  if (!manualSaleAttrName.value.trim()) {
+    ElMessage({
+      type: 'warning',
+      message: '请输入销售属性名称',
+    })
+    return
+  }
+
+  // 检查是否已存在相同名称的销售属性
+  const exists = saleAttr.value.find(
+    (item) => item.saleAttrName === manualSaleAttrName.value.trim(),
+  )
+  if (exists) {
+    ElMessage({
+      type: 'warning',
+      message: '该销售属性已存在',
+    })
+    return
+  }
+
+  // 生成一个临时的 baseSaleAttrId
+  const tempId = Date.now().toString()
+
+  let newSaleAttr: SaleAttr = {
+    baseSaleAttrId: tempId,
+    saleAttrName: manualSaleAttrName.value.trim(),
+    spuSaleAttrValueList: [],
+  }
+  saleAttr.value.push(newSaleAttr)
+  manualSaleAttrName.value = ''
+  showManualInput.value = false
+
+  ElMessage({
+    type: 'success',
+    message: '销售属性添加成功',
+  })
 }
 
 const toEdit = (row: SaleAttr, $index: number) => {
@@ -291,31 +355,72 @@ defineExpose({ initHasSpuData, initAddSpu })
       </el-dialog>
     </el-form-item>
     <el-form-item label="SPU销售属性">
-      <el-select
-        v-model="saleAttrIdAndValueName"
-        :placeholder="
-          unSelectSaleAttr.length
-            ? `还未选择${unSelectSaleAttr.length}个`
-            : '暂无数据可选择'
+      <div
+        style="
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 10px;
         "
       >
-        <el-option
-          :label="item.attrKey"
-          v-for="(item, index) in unSelectSaleAttr"
-          :key="item.id"
-          :value="`${item.id}:${item.attrKey}`"
-        ></el-option>
-      </el-select>
-      <el-button
-        style="margin-left: 10px"
-        type="primary"
-        size="default"
-        icon="Plus"
-        :disabled="saleAttrIdAndValueName ? false : true"
-        @click="addSaleAttr"
+        <el-select
+          v-model="saleAttrIdAndValueName"
+          :placeholder="
+            unSelectSaleAttr.length
+              ? `还未选择${unSelectSaleAttr.length}个`
+              : '暂无数据可选择'
+          "
+          style="flex: 1"
+        >
+          <el-option
+            :label="item.attrKey"
+            v-for="(item, index) in unSelectSaleAttr"
+            :key="item.id"
+            :value="`${item.id}:${item.attrKey}`"
+          ></el-option>
+        </el-select>
+        <el-button
+          type="primary"
+          size="default"
+          icon="Plus"
+          :disabled="!saleAttrIdAndValueName"
+          @click="addSaleAttr"
+        >
+          添加属性
+        </el-button>
+        <el-button
+          type="success"
+          size="default"
+          icon="Edit"
+          @click="showManualInput = true"
+        >
+          手动添加
+        </el-button>
+      </div>
+
+      <el-dialog
+        v-model="showManualInput"
+        title="手动添加销售属性"
+        width="400px"
       >
-        添加属性
-      </el-button>
+        <el-form label-width="120px">
+          <el-form-item label="销售属性名称">
+            <el-input
+              v-model="manualSaleAttrName"
+              placeholder="请输入销售属性名称，如：颜色、尺寸等"
+              clearable
+            ></el-input>
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="showManualInput = false">取消</el-button>
+            <el-button type="primary" @click="addManualSaleAttr">
+              确定添加
+            </el-button>
+          </span>
+        </template>
+      </el-dialog>
       <el-table border style="margin: 10px 0" :data="saleAttr">
         <el-table-column
           label="序号"

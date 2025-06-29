@@ -138,18 +138,29 @@ defineProps(['scene'])
         <el-col :span="12">
           <el-form-item label="品牌">
             <el-select
+              v-if="brandList.length > 0"
+              :key="`brand-select-${brandList.length}`"
               class="m-2"
               placeholder="选择品牌"
-              style="width: 100%"
+              style="width: 100%; min-width: 200px;"
               v-model="queryDto.brandId"
+              clearable
+              :popper-style="{ minWidth: '200px' }"
             >
               <el-option
                 v-for="item in brandList"
                 :key="item.id"
                 :label="item.name"
-                :value="item.id"
+                :value="item.id.toString()"
               />
             </el-select>
+            <el-select
+              v-else
+              class="m-2"
+              placeholder="加载中..."
+              style="width: 100%; min-width: 200px;"
+              disabled
+            ></el-select>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -196,4 +207,24 @@ defineProps(['scene'])
     </el-form>
   </el-card>
 </template>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+// 确保品牌选择器的下拉选项有足够空间显示
+:deep(.el-select-dropdown) {
+  min-width: 200px !important;
+}
+
+:deep(.el-select-dropdown__item) {
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: unset;
+  padding: 0 20px;
+  line-height: 34px;
+}
+
+// 品牌选择器样式优化
+.el-select {
+  .el-input__wrapper {
+    min-width: 200px;
+  }
+}
+</style>

@@ -44,8 +44,13 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
     css: {
       preprocessorOptions: {
         scss: {
+          // 使用现代编译器API解决legacy-js-api警告
+          api: 'modern-compiler',
+          // 禁用弃用警告
+          silenceDeprecations: ['legacy-js-api', 'import'],
           javascriptEnabled: true,
-          additionalData: '@import "./src/styles/variable.scss";',
+          // 使用@use替代@import (推荐方式)
+          additionalData: '@use "./src/styles/variable.scss" as *;',
         },
       },
     },

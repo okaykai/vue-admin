@@ -62,9 +62,15 @@ let useCategoryStore = defineStore('Category', {
       }
     },
     async findAllBrand() {
-      let res: TradeMarkResponse = await findALLBrand()
-      if (res.code === 200) {
-        this.brandList = res.data
+      try {
+        let res: TradeMarkResponse = await findALLBrand()
+        if (res.code === 200) {
+          this.brandList = res.data
+        } else {
+          console.error('API返回错误码:', res.code, '消息:', res.message)
+        }
+      } catch (error) {
+        console.error('findAllBrand API调用失败:', error)
       }
     },
   },

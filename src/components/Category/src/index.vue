@@ -142,7 +142,7 @@ defineProps(['scene'])
               :key="`brand-select-${brandList.length}`"
               class="m-2"
               placeholder="选择品牌"
-              style="width: 100%; min-width: 200px;"
+              style="width: 100%; min-width: 200px"
               v-model="queryDto.brandId"
               clearable
               :popper-style="{ minWidth: '200px' }"
@@ -158,7 +158,7 @@ defineProps(['scene'])
               v-else
               class="m-2"
               placeholder="加载中..."
-              style="width: 100%; min-width: 200px;"
+              style="width: 100%; min-width: 200px"
               disabled
             ></el-select>
           </el-form-item>
